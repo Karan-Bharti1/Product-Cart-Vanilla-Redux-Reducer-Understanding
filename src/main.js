@@ -22,7 +22,7 @@ import { createStore } from 'redux'
     id:3
   }
 ]
-const store=createStore(cartReducer)
+const store=createStore(cartReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 window.addToCartHandler=(id)=>{
   const product=Products.find(product=>product.id===id)
   store.dispatch(addToCart(product))
