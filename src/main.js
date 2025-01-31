@@ -1,4 +1,4 @@
-import { ADD_TO_CART, CALCULATE_TOTAL, REMOVE_FROM_CART } from './actions'
+import { ADD_TO_CART, CALCULATE_TOTAL, REMOVE_FROM_CART, addToCart, calculateTotal, removeFromCart } from './actions'
 import cartReducer from './cartReducer'
 import './style.css'
 
@@ -25,12 +25,12 @@ import { createStore } from 'redux'
 const store=createStore(cartReducer)
 window.addToCartHandler=(id)=>{
   const product=Products.find(product=>product.id===id)
-  store.dispatch({type:ADD_TO_CART,payload:product})
-  store.dispatch({ type: CALCULATE_TOTAL});
+  store.dispatch(addToCart(product))
+  store.dispatch(calculateTotal());
 }
 window.removeCartHandler=(id)=>{
-  store.dispatch({type:REMOVE_FROM_CART,payload:id})
-  store.dispatch({ type: CALCULATE_TOTAL});
+  store.dispatch(removeFromCart(id))
+  store.dispatch(calculateTotal());
 }
 
 const productsDisplay=document.getElementById("productsDisplay")
@@ -38,25 +38,28 @@ const cartDisplay=document.getElementById("cartDisplay")
 const totalDisplay=document.getElementById("totalDisplay")
 const displayProducts=Products.map(product=>`<li>${product.name}-Rs.${product.price} <button onClick="addToCartHandler(${product.id})">Add To Cart</button></li>`).join("")
 productsDisplay.innerHTML=displayProducts
-const updatedStatus = () => {
+const updateCart = () => {
   const state = store.getState();
 
   if (state.cart.length === 0) {
     cartDisplay.innerHTML = `<h4>No items in cart</h4>`;
+    totalDisplay.style.display="none"
   } else {
     cartDisplay.innerHTML = state.cart
       .map(
         (item) =>
-          `<li>${item.name} - ${item.quantity} - Rs.${item.price} 
+          `<li>${item.name} - Quantity ${item.quantity} - Rs.${item.price} 
             <button onClick="removeCartHandler(${item.id})">Delete</button>
           </li>`
       )
       .join("");
+      totalDisplay.style.display="block"
       totalDisplay.innerHTML = `<strong>Total: Rs.${state.total}</strong>`;
   }
+ 
 
   
 };
 
-updatedStatus()
-store.subscribe(()=>updatedStatus())
+updateCart()
+store.subscribe(()=>updateCart())
